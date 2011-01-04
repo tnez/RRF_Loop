@@ -35,9 +35,11 @@
     if([delegate runCount] > [[definition valueForKey:RRFLoopTargetRunCountKey]
                               integerValue]) {
       // ...then set our value for offset
+      DLog(@"Sending: (setValue:1 forRegistryKey:jumpOffset) to my delegate: %@",
+           delegate);      
       [delegate setValue:[NSNumber numberWithInteger:1] 
                                       forRegistryKey:@"jumpOffset"];
-      DLog(@"setValue:1 forRegistryKey:jumpOffset");
+
     } else {
       DLog(@"Not offsetting jump");
     }
