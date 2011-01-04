@@ -1,0 +1,16 @@
+//
+// Prefix header for all source files of the 'Loop' target in the 'Loop' project.
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
+
+// DEBUG-ONLY LOGGING
+/////////////////////
+#define ELog(...) NSLog(@"%s %@",__PRETTY_FUNCTION__,[NSString stringWithFormat:__VA_ARGS__])
+#ifdef DEBUG 
+  #define DLog(...) NSLog(@"%s %@",__PRETTY_FUNCTION__,[NSString stringWithFormat:__VA_ARGS__])
+#else
+  #define DLog(...) do { } while(0)
+#endif
