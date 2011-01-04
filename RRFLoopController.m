@@ -29,7 +29,25 @@
  Start the component - will receive this message from the component controller
  */
 - (void)begin {
-    
+  @try {
+    // if run count is greater than our target run count...
+    DLog(@"Run count --> %d",[delegate runCount]);
+    if([delegate runCount] > [[definition valueForKey:RRFLoopTargetRunCountKey]
+                              integerValue]) {
+      // ...then set our value for offset
+      [delegate setValue:[NSNumber numberWithInteger:1] 
+                                      forRegistryKey:@"jumpOffset"];
+      DLog(@"setValue:1 forRegistryKey:jumpOffset");
+    } else {
+      DLog(@"Not offsetting jump");
+    }
+  }
+  @catch (NSException * e) {
+    ELog(@"%@",e);
+  }
+  @finally {
+    [delegate componentDidFinish:self];
+  }
 }
 /**
  Return a string representation of the data directory
@@ -49,7 +67,8 @@
  passed
  */
 - (BOOL)isClearedToBegin {
-  return YES; // this is the default; change as needed
+  // have we logged any errors?
+  return (errorLog==nil || [errorLog isEqualToString:@""]);
 }
 /**
  Returns the file name containing the raw data that will be appended to the 
@@ -88,7 +107,11 @@
   [self setErrorLog:@""];
   // --- WHAT NEEDS TO BE INITIALIZED BEFORE THIS COMPONENT CAN OPERATE? ---
   ///////////////////////////////////////////////////////////////////////////
-  // ...
+  if(![[definition valueForKey:RRFLoopTargetRunCountKey] integerValue] >= 1) {
+    ELog(@"Tried to use loop bundle with target run count of: %@",
+         [definition valueForKey:RRFLoopTargetRunCountKey]);
+    [self registerError:@"Target run count must be greater than or equal to 1"];
+  }
   // LOAD NIB
   ///////////
   if([NSBundle loadNibNamed:RRFLoopMainNibNameKey owner:self]) {
@@ -159,6 +182,7 @@
 // ex: NSString * const RRFLoopNameOfPreferenceKey = @"RRFLoopNameOfPreference"
 NSString * const RRFLoopTaskNameKey = @"RRFLoopTaskName";
 NSString * const RRFLoopDataDirectoryKey = @"RRFLoopDataDirectory";
+NSString * const RRFLoopTargetRunCountKey = @"RRFLoopTargetRunCount";
 
 #pragma mark Internal Strings
 // HERE YOU DEFINE KEYS FOR CONSTANT STRINGS //
